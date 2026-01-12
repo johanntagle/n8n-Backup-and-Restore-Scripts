@@ -9,6 +9,11 @@
 N8N Workflow Downloader
 Downloads all workflows from n8n instance and organizes them by tags/folders
 
+Configuration:
+    Create a .env file with:
+    N8N_API_URL=https://your-n8n-instance.com
+    N8N_API_KEY=your-api-key
+
 Usage:
     uv run download_n8n_workflows.py
 """
@@ -20,10 +25,13 @@ from pathlib import Path
 from datetime import datetime
 from typing import List, Dict, Any
 
+# Import configuration module
+from n8n_config import get_n8n_api_url, get_n8n_api_key, get_backup_dir
+
 # Configuration
-N8N_API_URL = "https://n8ndev.aiautomationsfactory.com"
-N8N_API_KEY = os.environ.get("N8N_API_KEY", "")
-OUTPUT_DIR = Path.home() / "n8n-workflows-backup"
+N8N_API_URL = get_n8n_api_url()
+N8N_API_KEY = get_n8n_api_key()
+OUTPUT_DIR = get_backup_dir()
 BACKUP_TIMESTAMP = datetime.now().strftime("%Y%m%d_%H%M%S")
 
 class N8NWorkflowDownloader:
@@ -326,8 +334,8 @@ class N8NWorkflowDownloader:
 
 def main():
     if not N8N_API_KEY:
-        print("ERROR: N8N_API_KEY environment variable not set!")
-        print("Please set it with: export N8N_API_KEY='your-api-key'")
+        print("ERROR: N8N_API_KEY not configured!")
+        print("Set it in .env file or with: export N8N_API_KEY='your-api-key'")
         return
     
     downloader = N8NWorkflowDownloader(N8N_API_URL, N8N_API_KEY, OUTPUT_DIR)

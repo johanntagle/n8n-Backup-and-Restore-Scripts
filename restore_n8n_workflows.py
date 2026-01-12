@@ -9,12 +9,17 @@
 N8N Workflow Restore Script
 Restores workflows from backup to n8n instance
 
+Configuration:
+    Create a .env file with:
+    N8N_API_URL=https://your-n8n-instance.com
+    N8N_API_KEY=your-api-key
+
 Usage:
-    uv run n8n_restore_onefile.py [backup_directory]
-    
+    uv run restore_n8n_workflows.py [backup_directory]
+
 Examples:
-    uv run n8n_restore_onefile.py
-    uv run n8n_restore_onefile.py ~/n8n-workflows-backup/backup_20260112_111221
+    uv run restore_n8n_workflows.py
+    uv run restore_n8n_workflows.py ~/n8n-workflows-backup/backup_20260112_111221
 """
 
 import os
@@ -25,10 +30,13 @@ from pathlib import Path
 from datetime import datetime
 from typing import List, Dict, Any, Optional
 
-# Configuration from environment
-N8N_API_URL = os.environ.get("N8N_API_URL", "https://n8ndev.aiautomationsfactory.com")
-N8N_API_KEY = os.environ.get("N8N_API_KEY", "")
-BACKUP_BASE_DIR = Path(os.environ.get("BACKUP_DIR", Path.home() / "n8n-workflows-backup"))
+# Import configuration module
+from n8n_config import get_n8n_api_url, get_n8n_api_key, get_backup_dir
+
+# Configuration from .env file or environment
+N8N_API_URL = get_n8n_api_url()
+N8N_API_KEY = get_n8n_api_key()
+BACKUP_BASE_DIR = get_backup_dir()
 
 # ANSI color codes
 class Colors:
@@ -354,8 +362,8 @@ def main():
     
     # Check API key
     if not N8N_API_KEY:
-        print_error("N8N_API_KEY environment variable not set")
-        print_info("Usage: export N8N_API_KEY='your-api-key'")
+        print_error("N8N_API_KEY not configured!")
+        print_info("Set it in .env file or with: export N8N_API_KEY='your-api-key'")
         sys.exit(1)
     
     # Determine backup directory

@@ -10,8 +10,12 @@
 
 Ultra-portable single-file backup script. Just run it!
 
+Configuration:
+    Create a .env file with:
+    N8N_API_URL=https://your-n8n-instance.com
+    N8N_API_KEY=your-api-key
+
 Usage:
-    export N8N_API_KEY='your-key'
     uv run n8n_backup_onefile.py
 
 Or without uv:
@@ -27,13 +31,16 @@ from pathlib import Path
 from datetime import datetime
 from typing import List, Dict, Any
 
+# Import configuration module
+from n8n_config import get_n8n_api_url, get_n8n_api_key, get_backup_dir
+
 # ============================================================================
-# CONFIGURATION - Edit these if needed
+# CONFIGURATION
 # ============================================================================
 
-N8N_API_URL = "https://n8ndev.aiautomationsfactory.com"
-N8N_API_KEY = os.environ.get("N8N_API_KEY", "")
-OUTPUT_DIR = Path.home() / "n8n-workflows-backup"
+N8N_API_URL = get_n8n_api_url()
+N8N_API_KEY = get_n8n_api_key()
+OUTPUT_DIR = get_backup_dir()
 BACKUP_TIMESTAMP = datetime.now().strftime("%Y%m%d_%H%M%S")
 
 # ============================================================================
@@ -283,8 +290,8 @@ class N8NBackup:
         
         # Validate API key
         if not self.api_key:
-            print_error("N8N_API_KEY not set!")
-            print_info("Set it with: export N8N_API_KEY='your-key'")
+            print_error("N8N_API_KEY not configured!")
+            print_info("Set it in .env file or with: export N8N_API_KEY='your-key'")
             sys.exit(1)
         
         # Create backup directory
