@@ -12,6 +12,19 @@ Complete backup and restore solution for n8n workflows with hierarchical organiz
 - ✅ **UV package manager** - fast, no virtual env needed
 - ✅ **Index files** - JSON and markdown for easy browsing
 
+## ⚠️ Disclaimer
+
+THESE SCRIPTS ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+**USE OF THESE SCRIPTS IS AT YOUR OWN RISK.** THE AUTHOR IS NOT RESPONSIBLE FOR:
+
+- Any loss of data, workflows, or configurations
+- Any damage to your n8n instance or systems
+- Any unintended consequences of backup or restore operations
+- Security breaches resulting from improper use or configuration
+
+**Always test backups in a non-production environment first and maintain your own backup strategy.**
+
 ## ⚙️ Configuration
 
 ### Step 1: Create Configuration File
