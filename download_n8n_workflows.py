@@ -169,51 +169,32 @@ class N8NWorkflowDownloader:
         for char in invalid_chars:
             name = name.replace(char, '_')
         return name.strip()
-    
+
     def download_workflow(self, workflow_summary: Dict[str, Any], folder_path: str, backup_dir: Path) -> bool:
         """Download a single workflow to nested folder structure"""
         workflow_id = workflow_summary['id']
         workflow_name = workflow_summary.get('name', 'Unnamed')
-        
+
         print(f"  Downloading: {workflow_name} ({workflow_id})")
-        
+
         # Get full workflow details
         workflow_data = self.get_workflow_details(workflow_id)
         if not workflow_data:
             return False
-        
+
         # Create nested folder structure
         full_folder_path = backup_dir / folder_path
         full_folder_path.mkdir(parents=True, exist_ok=True)
-        
+
         # Create safe filename
         safe_name = self.sanitize_filename(workflow_name)
-        filename = f"{safe_name}_{workflow_id}.json"
+        filename = f"{safe_name}.json"
         filepath = full_folder_path / filename
-        
-        # Create metadata
-        metadata = {
-            'downloaded_at': datetime.now().isoformat(),
-            'workflow_id': workflow_id,
-            'workflow_name': workflow_name,
-            'active': workflow_summary.get('active', False),
-            'archived': workflow_summary.get('isArchived', False),
-            'created_at': workflow_summary.get('createdAt'),
-            'updated_at': workflow_summary.get('updatedAt'),
-            'tags': [tag.get('name') for tag in workflow_summary.get('tags', [])],
-            'node_count': workflow_summary.get('nodeCount', 0)
-        }
-        
-        # Combine metadata with workflow
-        output_data = {
-            'metadata': metadata,
-            'workflow': workflow_data
-        }
-        
-        # Save to file
+
+        # Save workflow data exactly as returned by API (no modifications)
         try:
             with open(filepath, 'w', encoding='utf-8') as f:
-                json.dump(output_data, f, indent=2, ensure_ascii=False)
+                json.dump(workflow_data, f, indent=2, ensure_ascii=False)
             return True
         except Exception as e:
             print(f"    Error saving {filename}: {e}")

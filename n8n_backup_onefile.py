@@ -209,44 +209,30 @@ class N8NBackup:
         for char in invalid_chars:
             name = name.replace(char, '_')
         return name.strip()
-    
+
     def download_workflow(self, workflow: Dict, folder_path: str, backup_dir: Path) -> bool:
         """Download single workflow to nested folder structure"""
         workflow_id = workflow['id']
         workflow_name = workflow.get('name', 'Unnamed')
-        
+
         print(f"  → {workflow_name}")
-        
+
         workflow_data = self.get_workflow_details(workflow_id)
         if not workflow_data:
             return False
-        
+
         # Create nested folder path
         full_folder_path = backup_dir / folder_path
         full_folder_path.mkdir(parents=True, exist_ok=True)
-        
+
         safe_name = self.sanitize_filename(workflow_name)
-        filename = f"{safe_name}_{workflow_id}.json"
+        filename = f"{safe_name}.json"
         filepath = full_folder_path / filename
-        
-        output = {
-            'metadata': {
-                'downloaded_at': datetime.now().isoformat(),
-                'workflow_id': workflow_id,
-                'workflow_name': workflow_name,
-                'active': workflow.get('active', False),
-                'archived': workflow.get('isArchived', False),
-                'created_at': workflow.get('createdAt'),
-                'updated_at': workflow.get('updatedAt'),
-                'tags': [tag.get('name') for tag in workflow.get('tags', [])],
-                'node_count': workflow.get('nodeCount', 0)
-            },
-            'workflow': workflow_data
-        }
-        
+
+        # Save workflow data exactly as returned by API (no modifications)
         try:
             with open(filepath, 'w', encoding='utf-8') as f:
-                json.dump(output, f, indent=2, ensure_ascii=False)
+                json.dump(workflow_data, f, indent=2, ensure_ascii=False)
             return True
         except Exception as e:
             print_error(f"Failed to save {filename}: {e}")

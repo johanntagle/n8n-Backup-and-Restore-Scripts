@@ -115,13 +115,39 @@ class N8NWorkflowRestore:
         
         print_info(f"Found {len(existing)} existing workflows")
         return existing
-    
+
+    def clean_workflow_for_api(self, workflow_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Clean workflow data before sending to API for creating new workflow.
+
+        Only keeps fields that are accepted by the POST /api/v1/workflows endpoint.
+        """
+        # ONLY keep fields that n8n API accepts when creating workflows
+        allowed_fields = [
+            'name',         # Required
+            'nodes',        # Required
+            'connections',  # Required
+        ]
+
+        # Create a copy with only allowed fields
+        cleaned_data = {k: v for k, v in workflow_data.items() if k in allowed_fields}
+
+        # Add settings with only accepted fields
+        # Based on API docs, most settings fields are NOT accepted when creating
+        # We include only the minimal settings object
+        cleaned_data['settings'] = {}
+
+        return cleaned_data
+
     def create_workflow(self, workflow_data: Dict[str, Any]) -> Optional[str]:
         """Create a new workflow"""
         url = f"{self.api_url}/api/v1/workflows"
-        
+
+        # Clean the workflow data before sending to API
+        cleaned_data = self.clean_workflow_for_api(workflow_data)
+
         try:
-            response = self.session.post(url, json=workflow_data, timeout=30)
+            response = self.session.post(url, json=cleaned_data, timeout=30)
             response.raise_for_status()
             result = response.json()
             return result.get('id')
